@@ -1,11 +1,19 @@
+<!-- 
+    This window allows users to filter recipes based on ingredients.
+    It includes a text box for entering the ingredient to filter by, a button to apply the filter,
+    and a pie chart to display the filtered results.
+-->
 <Window x:Class="RecipeApp.FilterRecipesWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Filter Recipes" Height="450" Width="400">
     <Grid>
         <StackPanel>
+            <!-- TextBox for entering the ingredient to filter recipes by -->
             <TextBox Name="IngredientFilterTextBox" PlaceholderText="Filter by Ingredient" Margin="10"/>
+            <!-- Button to apply the filter. When clicked, it triggers the ApplyFilter_Click event handler -->
             <Button Content="Apply Filter" Click="ApplyFilter_Click" Margin="10"/>
+            <!-- Pie chart to display the filtered recipes -->
             <LiveCharts:PieChart Name="PieChart" Margin="10"/>
         </StackPanel>
     </Grid>
