@@ -21,6 +21,12 @@
             </Grid>
             <!-- Button to apply the filter. When clicked, it triggers the ApplyFilter_Click event handler -->
             <Button Content="Apply Filter" Click="ApplyFilter_Click" Margin="10"/>
+            <!-- TextBlock to display a message if no recipes are found -->
+            <TextBlock Name="NoRecipesTextBlock" Text="No recipes found" 
+                       Visibility="Collapsed" 
+                       Foreground="Red" 
+                       Margin="10" 
+                       HorizontalAlignment="Center"/>
             <!-- Pie chart to display the filtered recipes -->
             <LiveCharts:PieChart Name="PieChart" Margin="10"/>
         </StackPanel>

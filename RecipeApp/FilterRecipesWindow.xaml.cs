@@ -29,27 +29,39 @@ namespace RecipeApp
             // Get the ingredient to filter by from the text box
             string ingredient = IngredientFilterTextBox.Text;
 
-            // Filter the recipes that contain the specified ingredient (case-insensitive)
+            // Filter the recipes that contain the specified ingredient (case-insensitive, partial match)
             var filteredRecipes = _recipeManager.GetRecipes()
-                .Where(r => r.Ingredients.Any(i => i.Name.Equals(ingredient, System.StringComparison.OrdinalIgnoreCase)))
+                .Where(r => r.Ingredients.Any(i => i.Name.IndexOf(ingredient, System.StringComparison.OrdinalIgnoreCase) >= 0))
                 .ToList();
 
-            // Group the ingredients of the filtered recipes by their food group
-            var foodGroups = filteredRecipes.SelectMany(r => r.Ingredients).GroupBy(i => i.FoodGroup);
-            SeriesCollection series = new SeriesCollection();
-
-            // Create a pie chart series for each food group
-            foreach (var group in foodGroups)
+            // Check if any recipes were found
+            if (filteredRecipes.Any())
             {
-                series.Add(new PieSeries
-                {
-                    Title = group.Key, // Set the title of the pie slice to the food group name
-                    Values = new ChartValues<int> { group.Count() } // Set the value of the pie slice to the count of ingredients in the group
-                });
-            }
+                NoRecipesTextBlock.Visibility = Visibility.Collapsed;
 
-            // Update the pie chart with the new series
-            PieChart.Series = series;
+                // Group the ingredients of the filtered recipes by their food group
+                var foodGroups = filteredRecipes.SelectMany(r => r.Ingredients).GroupBy(i => i.FoodGroup);
+                SeriesCollection series = new SeriesCollection();
+
+                // Create a pie chart series for each food group
+                foreach (var group in foodGroups)
+                {
+                    series.Add(new PieSeries
+                    {
+                        Title = group.Key, // Set the title of the pie slice to the food group name
+                        Values = new ChartValues<int> { group.Count() } // Set the value of the pie slice to the count of ingredients in the group
+                    });
+                }
+
+                // Update the pie chart with the new series
+                PieChart.Series = series;
+            }
+            else
+            {
+                // Show a message if no recipes are found
+                NoRecipesTextBlock.Visibility = Visibility.Visible;
+                PieChart.Series.Clear();
+            }
         }
     }
 }
