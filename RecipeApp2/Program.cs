@@ -6,8 +6,7 @@ namespace RecipeApp2
 {
     class Program
     {
-        // A list to store all the recipes created in the app.
-        static List<Recipe> recipes = new List<Recipe>();
+        private static RecipeManager _recipeManager = new RecipeManager();
 
         static void Main(string[] args)
         {
@@ -15,10 +14,7 @@ namespace RecipeApp2
             DisplayMainMenu();
         }
 
-        /// <summary>
-        /// Displays the main menu and handles user interaction.
-        /// </summary>
-        static void DisplayMainMenu()
+        private static void DisplayMainMenu()
         {
             while (true)
             {
@@ -28,7 +24,7 @@ namespace RecipeApp2
                 Console.WriteLine("3. Search for a recipe by name");
                 Console.WriteLine("4. Exit");
 
-                int choice = ReadInteger("Enter your choice (1-4): ", 1, 4);
+                int choice = ReadInteger("Enter your choice (1-4): ", 1, 4).Value;
 
                 switch (choice)
                 {
@@ -45,204 +41,82 @@ namespace RecipeApp2
                         if (ConfirmAction("Are you sure you want to exit?"))
                         {
                             Console.WriteLine("Exiting RecipeApp. Goodbye!");
-                            return; // Exit the program
+                            return;
                         }
                         break;
                 }
             }
         }
 
-        /// <summary>
-        /// Displays all recipes in alphabetical order.
-        /// </summary>
-        static void DisplayAllRecipes()
+        private static void DisplayAllRecipes()
         {
-            var sortedRecipes = recipes.OrderBy(r => r.Name).ToList();
-            foreach (var recipe in sortedRecipes)
+            var recipes = _recipeManager.GetRecipes();
+            foreach (var recipe in recipes)
             {
-                recipe.DisplayRecipe();
+                DisplayRecipe(recipe);
             }
         }
 
-        /// <summary>
-        /// Guides the user through creating a new recipe.
-        /// </summary>
-        static void CreateNewRecipe()
+        private static void DisplayRecipe(Recipe recipe)
         {
-            Console.Write("Enter the name of the recipe: ");
-            string recipeName = Console.ReadLine() ?? "";
-            Recipe currentRecipe = new Recipe(recipeName);
-            currentRecipe.OnCalorieExceeded += HandleCalorieExceeded;  // Subscribe to the event
-            recipes.Add(currentRecipe);
-            Console.WriteLine($"Recipe '{recipeName}' created.");
-
-            try
+            Console.WriteLine($"\nRecipe: {recipe.Name}");
+            Console.WriteLine("Ingredients:");
+            foreach (var ingredient in recipe.Ingredients)
             {
-                while (true)
+                Console.WriteLine($"- {ingredient.Quantity} {ingredient.Unit} of {ingredient.Name} ({ingredient.Calories} calories, {ingredient.FoodGroup})");
+            }
+            Console.WriteLine("Steps:");
+            foreach (var step in recipe.Steps)
+            {
+                Console.WriteLine($"- {step}");
+            }
+            Console.WriteLine($"Total Calories: {recipe.TotalCalories}");
+            if (recipe.TotalCalories > 300)
+            {
+                HandleCalorieExceeded(recipe.TotalCalories);
+            }
+        }
+
+        private static void CreateNewRecipe()
+        {
+            Console.WriteLine("\nEnter the name of the recipe:");
+            string name = Console.ReadLine();
+            int numberOfIngredients = ReadInteger("Enter the number of ingredients: ", 1, 100).Value;
+
+            var ingredients = new List<Ingredient>();
+            for (int i = 0; i < numberOfIngredients; i++)
+            {
+                Console.WriteLine($"\nEnter details for ingredient {i + 1}:");
+                string ingredientName = ReadString("Name: ");
+                double quantity = ReadDouble("Quantity: ");
+                string unit = ReadString("Unit of measurement: ");
+                int calories = ReadInteger("Calories: ", 0, 10000).Value;
+                string foodGroup = ReadString("Food Group: ");
+                ingredients.Add(new Ingredient(ingredientName, quantity, unit, calories, foodGroup));
+            }
+
+            int numberOfSteps = ReadInteger("Enter the number of steps: ", 1, 100).Value;
+            var steps = new List<string>();
+            for (int i = 0; i < numberOfSteps; i++)
+            {
+                steps.Add(ReadString($"Step {i + 1}: "));
+            }
+
+            var recipe = new Recipe(name, ingredients, steps);
+            _recipeManager.AddRecipe(recipe);
+            Console.WriteLine("Recipe added successfully!");
+        }
+
+        private static void SearchRecipesByName()
+        {
+            Console.WriteLine("\nEnter the name of the recipe to search for:");
+            string name = Console.ReadLine();
+            var recipes = _recipeManager.SearchRecipesByName(name);
+            if (recipes.Any())
+            {
+                foreach (var recipe in recipes)
                 {
-                    // Display recipe editing options
-                    Console.WriteLine("\nChoose an option:");
-                    Console.WriteLine("1. Enter ingredients");
-                    Console.WriteLine("2. Enter steps");
-                    Console.WriteLine("3. Display recipe");
-                    Console.WriteLine("4. Scale recipe");
-                    Console.WriteLine("5. Reset quantities");
-                    Console.WriteLine("6. Clear recipe");
-                    Console.WriteLine("7. Exit to main menu");
-
-                    // Prompt user for choice
-                    Console.Write("Enter your choice: ");
-                    string choice = Console.ReadLine()!; // Input choice from user
-
-                    switch (choice)
-                    {
-                        case "1":
-                            EnterIngredients(currentRecipe); // Add ingredients to the recipe
-                            break;
-                        case "2":
-                            EnterSteps(currentRecipe); // Add steps to the recipe
-                            break;
-                        case "3":
-                            currentRecipe.DisplayRecipe(); // Display the recipe
-                            break;
-                        case "4":
-                            ScaleRecipe(currentRecipe); // Scale the recipe
-                            break;
-                        case "5":
-                            currentRecipe.ResetQuantities(); // Reset ingredient quantities
-                            break;
-                        case "6":
-                            if (ConfirmAction("Are you sure you want to clear the recipe?"))
-                            {
-                                currentRecipe.ClearRecipe();
-                                Console.WriteLine("Recipe cleared.");
-                            }
-                            break;
-                        case "7":
-                            Console.WriteLine("Returning to main menu.");
-                            return; // Return to main menu
-                        default:
-                            Console.WriteLine("Invalid choice. Please enter a number from 1 to 7.");
-                            break;
-                    }
-                }
-            }
-            finally
-            {
-                // Unsubscribe from the event when exiting the recipe editing mode
-                currentRecipe.OnCalorieExceeded -= HandleCalorieExceeded;
-                Console.WriteLine("Unsubscribed from calorie exceeded event.");
-            }
-        }
-
-        /// <summary>
-        /// Allows the user to enter ingredients for a recipe.
-        /// </summary>
-        /// <param name="recipe">The recipe to add ingredients to.</param>
-        static void EnterIngredients(Recipe recipe)
-        {
-            int numIngredients = ReadInteger("Enter the number of ingredients (1-100): ", 1, 100);
-            for (int i = 0; i < numIngredients; i++)
-            {
-                Console.Write($"Enter name for ingredient {i + 1}: ");
-                string name = Console.ReadLine() ?? "";
-
-                Console.Write($"Enter quantity for {name} (e.g., 2.5): ");
-                string quantityInput = Console.ReadLine() ?? "";
-                if (double.TryParse(quantityInput, out double quantity))
-                {
-                    string unit = Ingredient.GetUnitFromUser(name);
-                    Console.Write($"Enter calories per unit for {name} (e.g., 100): ");
-                    string caloriesInput = Console.ReadLine() ?? "";
-                    if (int.TryParse(caloriesInput, out int calories))
-                    {
-                        Ingredient.FoodGroup group = Ingredient.ChooseFoodGroup();
-                        recipe.Ingredients.Add(new Ingredient(name, quantity, unit, calories, group));
-                        Console.WriteLine("Ingredient added successfully.\n");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid input for calories. Please enter a valid number.");
-                        i--; // Re-enter this ingredient
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid input for quantity. Please enter a valid number.");
-                    i--; // Re-enter this ingredient
-                }
-            }
-        }
-
-        /// <summary>
-        /// Allows the user to enter steps for a recipe.
-        /// </summary>
-        /// <param name="recipe">The recipe to add steps to.</param>
-        static void EnterSteps(Recipe recipe)
-        {
-            int numSteps = ReadInteger("Enter the number of steps: ", 1, 100);
-            for (int i = 0; i < numSteps; i++)
-            {
-                Console.Write($"Enter step {i + 1} description: ");
-                string description = Console.ReadLine() ?? "";
-                recipe.Steps.Add(new Step(description));
-                Console.WriteLine("Step added successfully.");
-            }
-        }
-
-        /// <summary>
-        /// Scales the recipe by a user-specified factor.
-        /// </summary>
-        /// <param name="recipe">The recipe to scale.</param>
-        static void ScaleRecipe(Recipe recipe)
-        {
-            Console.Write("Enter scale factor (0.5, 2, or 3): ");
-            string input = Console.ReadLine() ?? "";
-
-            if (double.TryParse(input, out double factor))
-            {
-                recipe.ScaleRecipe(factor);
-                Console.WriteLine($"Recipe scaled by a factor of {factor}.");
-                Console.WriteLine($"New Total Calories after scaling: {recipe.CalculateTotalCalories()}");
-            }
-            else
-            {
-                Console.WriteLine("Invalid scale factor. Please enter a valid number.");
-            }
-        }
-
-        /// <summary>
-        /// Confirms an action with the user before proceeding.
-        /// </summary>
-        /// <param name="message">The confirmation message to display.</param>
-        /// <returns>True if the user confirms, false otherwise.</returns>
-        static bool ConfirmAction(string message)
-        {
-            Console.Write(message + " (Y/N): ");
-            string response = Console.ReadLine().Trim().ToUpper();
-            return response == "Y";
-        }
-
-        /// <summary>
-        /// Searches for recipes by name.
-        /// </summary>
-        /// <param name="searchName">The name to search for.</param>
-        static void SearchRecipesByName()
-        {
-            Console.Write("Enter the recipe name to search for (or type 'cancel' to cancel): ");
-            string searchName = Console.ReadLine().Trim().ToLower();
-            if (searchName == "cancel")
-            {
-                Console.WriteLine("Search cancelled.");
-                return;
-            }
-            var foundRecipes = recipes.Where(r => r.Name.ToLower().Contains(searchName)).ToList();
-
-            if (foundRecipes.Any())
-            {
-                foreach (var recipe in foundRecipes)
-                {
-                    recipe.DisplayRecipe();
+                    DisplayRecipe(recipe);
                 }
             }
             else
@@ -251,15 +125,7 @@ namespace RecipeApp2
             }
         }
 
-        /// <summary>
-        /// Reads an integer from the console after prompting the user, ensuring it falls within a specified range.
-        /// Allows the user to cancel the input by entering 'cancel'.
-        /// </summary>
-        /// <param name="prompt">The prompt to display to the user.</param>
-        /// <param name="min">The minimum acceptable value.</param>
-        /// <param name="max">The maximum acceptable value.</param>
-        /// <returns>The integer value entered by the user or null if cancelled.</returns>
-        static int? ReadInteger(string prompt, int min, int max)
+        private static int? ReadInteger(string prompt, int min, int max)
         {
             while (true)
             {
@@ -268,7 +134,7 @@ namespace RecipeApp2
                 if (input.Trim().ToLower() == "cancel")
                 {
                     Console.WriteLine("Input cancelled.");
-                    return null; // Return null to indicate cancellation
+                    return null;
                 }
                 if (int.TryParse(input, out int value) && value >= min && value <= max)
                 {
@@ -281,17 +147,39 @@ namespace RecipeApp2
             }
         }
 
-        /// <summary>
-        /// Handles the event when the total calories of a recipe exceed a certain threshold.
-        /// </summary>
-        /// <param name="totalCalories">The total calories that triggered the alert.</param>
-        static void HandleCalorieExceeded(int totalCalories)
+        private static string ReadString(string prompt)
+        {
+            Console.Write(prompt);
+            return Console.ReadLine();
+        }
+
+        private static double ReadDouble(string prompt)
+        {
+            while (true)
+            {
+                Console.Write(prompt);
+                if (double.TryParse(Console.ReadLine(), out double value))
+                {
+                    return value;
+                }
+                else
+                {
+                    Console.WriteLine("Please enter a valid number.");
+                }
+            }
+        }
+
+        private static bool ConfirmAction(string message)
+        {
+            Console.Write($"{message} (y/n): ");
+            return Console.ReadLine().Trim().ToLower() == "y";
+        }
+
+        private static void HandleCalorieExceeded(int totalCalories)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Alert: Total calories exceed 300! Current calories: {totalCalories}");
             Console.ResetColor();
         }
     }
-}
-}
 }
