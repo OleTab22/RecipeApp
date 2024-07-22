@@ -8,8 +8,15 @@
         Title="Create Recipe" Height="450" Width="400">
     <Grid>
         <StackPanel>
-            <!-- TextBox for entering the name of the recipe -->
-            <TextBox Name="RecipeNameTextBox" PlaceholderText="Recipe Name" Margin="10"/>
+            <!-- Grid to hold the TextBox and TextBlock for placeholder simulation -->
+            <Grid Margin="10">
+                <TextBox Name="RecipeNameTextBox" TextChanged="RecipeNameTextBox_TextChanged"/>
+                <TextBlock Name="PlaceholderTextBlock" Text="Recipe Name" 
+                           IsHitTestVisible="False" 
+                           Foreground="Gray" 
+                           VerticalAlignment="Center" 
+                           Margin="5,0,0,0"/>
+            </Grid>
             <!-- Button to add the recipe. When clicked, it triggers the AddRecipe_Click event handler -->
             <Button Content="Add Recipe" Click="AddRecipe_Click" Margin="10"/>
         </StackPanel>

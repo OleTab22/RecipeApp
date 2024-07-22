@@ -17,6 +17,12 @@ namespace RecipeApp
             _recipeManager = recipeManager;
         }
 
+        // Event handler to manage placeholder text visibility
+        private void IngredientFilterTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            PlaceholderTextBlock.Visibility = string.IsNullOrEmpty(IngredientFilterTextBox.Text) ? Visibility.Visible : Visibility.Hidden;
+        }
+
         // Event handler for the Apply Filter button click event
         private void ApplyFilter_Click(object sender, RoutedEventArgs e)
         {

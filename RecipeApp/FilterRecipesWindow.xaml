@@ -6,11 +6,19 @@
 <Window x:Class="RecipeApp.FilterRecipesWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:LiveCharts="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         Title="Filter Recipes" Height="450" Width="400">
     <Grid>
         <StackPanel>
-            <!-- TextBox for entering the ingredient to filter recipes by -->
-            <TextBox Name="IngredientFilterTextBox" PlaceholderText="Filter by Ingredient" Margin="10"/>
+            <!-- Grid to hold the TextBox and TextBlock for placeholder simulation -->
+            <Grid Margin="10">
+                <TextBox Name="IngredientFilterTextBox" TextChanged="IngredientFilterTextBox_TextChanged"/>
+                <TextBlock Name="PlaceholderTextBlock" Text="Filter by Ingredient" 
+                           IsHitTestVisible="False" 
+                           Foreground="Gray" 
+                           VerticalAlignment="Center" 
+                           Margin="5,0,0,0"/>
+            </Grid>
             <!-- Button to apply the filter. When clicked, it triggers the ApplyFilter_Click event handler -->
             <Button Content="Apply Filter" Click="ApplyFilter_Click" Margin="10"/>
             <!-- Pie chart to display the filtered recipes -->

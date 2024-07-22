@@ -37,5 +37,11 @@ namespace RecipeApp
             // Close the CreateRecipeWindow
             this.Close();
         }
+
+        // Event handler to manage placeholder text visibility
+        private void RecipeNameTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            PlaceholderTextBlock.Visibility = string.IsNullOrEmpty(RecipeNameTextBox.Text) ? Visibility.Visible : Visibility.Hidden;
+        }
     }
 }
