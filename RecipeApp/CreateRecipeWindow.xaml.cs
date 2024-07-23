@@ -18,30 +18,52 @@ namespace RecipeApp
         // Event handler for the Add Recipe button click event
         private void AddRecipe_Click(object sender, RoutedEventArgs e)
         {
-            // Get the recipe name from the text box
-            string name = RecipeNameTextBox.Text;
+            try
+            {
+                // Get the recipe name from the text box
+                string name = RecipeNameTextBox.Text;
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    ShowValidationError("Recipe name cannot be empty.");
+                    return;
+                }
 
-            // Initialize empty lists for ingredients and steps
-            var ingredients = new List<Ingredient>();
-            var steps = new List<string>();
+                // Initialize empty lists for ingredients and steps
+                var ingredients = new List<Ingredient>();
+                var steps = new List<string>();
 
-            // Create a new Recipe object with the provided name, ingredients, and steps
-            var recipe = new Recipe(name, ingredients, steps);
+                // Create a new Recipe object with the provided name, ingredients, and steps
+                var recipe = new Recipe(name, ingredients, steps);
 
-            // Add the new recipe to the RecipeManager
-            _recipeManager.AddRecipe(recipe);
+                // Add the new recipe to the RecipeManager
+                _recipeManager.AddRecipe(recipe);
 
-            // Show a message box to inform the user that the recipe was added successfully
-            MessageBox.Show("Recipe added successfully!");
+                // Show a message box to inform the user that the recipe was added successfully
+                MessageBox.Show("Recipe added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            // Close the CreateRecipeWindow
-            this.Close();
+                // Close the CreateRecipeWindow
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage(ex);
+            }
         }
 
         // Event handler to manage placeholder text visibility
         private void RecipeNameTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             PlaceholderTextBlock.Visibility = string.IsNullOrEmpty(RecipeNameTextBox.Text) ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        private void ShowValidationError(string message)
+        {
+            MessageBox.Show(message, "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        private void ShowErrorMessage(Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }
