@@ -18,6 +18,7 @@ namespace RecipeApp
         // Event handler for the Add Recipe button click event
         private void AddRecipe_Click(object sender, RoutedEventArgs e)
         {
+<<<<<<< HEAD
             try
             {
                 // Get the recipe name from the text box
@@ -48,6 +49,26 @@ namespace RecipeApp
             {
                 ShowErrorMessage(ex);
             }
+=======
+            // Get the recipe name from the text box
+            string name = RecipeNameTextBox.Text;
+
+            // Initialize empty lists for ingredients and steps
+            var ingredients = new List<Ingredient>();
+            var steps = new List<string>();
+
+            // Create a new Recipe object with the provided name, ingredients, and steps
+            var recipe = new Recipe(name, ingredients, steps);
+
+            // Add the new recipe to the RecipeManager
+            _recipeManager.AddRecipe(recipe);
+
+            // Show a message box to inform the user that the recipe was added successfully
+            MessageBox.Show("Recipe added successfully!");
+
+            // Close the CreateRecipeWindow
+            this.Close();
+>>>>>>> e3a71bc745c15ccebc7f1f8c64cd8558e104d742
         }
 
         // Event handler to manage placeholder text visibility
@@ -55,6 +76,7 @@ namespace RecipeApp
         {
             PlaceholderTextBlock.Visibility = string.IsNullOrEmpty(RecipeNameTextBox.Text) ? Visibility.Visible : Visibility.Hidden;
         }
+<<<<<<< HEAD
 
         private void ShowValidationError(string message)
         {
@@ -67,3 +89,7 @@ namespace RecipeApp
         }
     }
 }
+=======
+    }
+}
+>>>>>>> e3a71bc745c15ccebc7f1f8c64cd8558e104d742

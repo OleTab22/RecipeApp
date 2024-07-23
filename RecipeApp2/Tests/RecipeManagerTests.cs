@@ -1,6 +1,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RecipeApp2;
+<<<<<<< HEAD
 using System;
+=======
+>>>>>>> e3a71bc745c15ccebc7f1f8c64cd8558e104d742
 using System.Collections.Generic;
 
 namespace RecipeApp2.Tests
@@ -8,6 +11,7 @@ namespace RecipeApp2.Tests
     [TestClass]
     public class RecipeManagerTests
     {
+<<<<<<< HEAD
         private RecipeManager _manager;
 
         [TestInitialize]
@@ -19,6 +23,12 @@ namespace RecipeApp2.Tests
         [TestMethod]
         public void TestAddRecipe()
         {
+=======
+        [TestMethod]
+        public void TestAddRecipe()
+        {
+            var manager = new RecipeManager();
+>>>>>>> e3a71bc745c15ccebc7f1f8c64cd8558e104d742
             var ingredients = new List<Ingredient>
             {
                 new Ingredient("Flour", 1, "cup", 100, "Grain"),
@@ -27,8 +37,13 @@ namespace RecipeApp2.Tests
             var steps = new List<string> { "Mix ingredients", "Bake for 30 minutes" };
             var recipe = new Recipe("Cake", ingredients, steps);
 
+<<<<<<< HEAD
             _manager.AddRecipe(recipe);
             var recipes = _manager.GetRecipes();
+=======
+            manager.AddRecipe(recipe);
+            var recipes = manager.GetRecipes();
+>>>>>>> e3a71bc745c15ccebc7f1f8c64cd8558e104d742
 
             Assert.AreEqual(1, recipes.Count);
             Assert.AreEqual("Cake", recipes[0].Name);
@@ -47,6 +62,7 @@ namespace RecipeApp2.Tests
 
             Assert.AreEqual(300, recipe.TotalCalories);
         }
+<<<<<<< HEAD
 
         [TestMethod]
         public void TestDeleteRecipe()
@@ -121,3 +137,7 @@ namespace RecipeApp2.Tests
         }
     }
 }
+=======
+    }
+}
+>>>>>>> e3a71bc745c15ccebc7f1f8c64cd8558e104d742
