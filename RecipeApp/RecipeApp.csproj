@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <!-- Specify the output type as a Windows executable -->
+    <OutputType>WinExe</OutputType>
+    <!-- Target the .NET 5.0 framework for Windows -->
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <!-- Enable the use of Windows Presentation Foundation (WPF) -->
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reference the LiveCharts.Wpf package, version 0.9.7, for creating charts in the application -->
+    <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
+  </ItemGroup>
+
+</Project>

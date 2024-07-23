@@ -1,0 +1,14 @@
+<!--
+    App.xaml
+    This file defines the application-level properties and resources for the RecipeApp.
+    It specifies the startup window and can include application-wide resources.
+-->
+
+<Application x:Class="RecipeApp.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <!-- Application-wide resources can be defined here -->
+    </Application.Resources>
+</Application>

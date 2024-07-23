@@ -1,0 +1,24 @@
+<!-- 
+    This window allows users to create a new recipe. 
+    It includes a text box for entering the recipe name and a button to add the recipe.
+-->
+<Window x:Class="RecipeApp.CreateRecipeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Create Recipe" Height="450" Width="400">
+    <Grid>
+        <StackPanel>
+            <!-- Grid to hold the TextBox and TextBlock for placeholder simulation -->
+            <Grid Margin="10">
+                <TextBox Name="RecipeNameTextBox" TextChanged="RecipeNameTextBox_TextChanged"/>
+                <TextBlock Name="PlaceholderTextBlock" Text="Recipe Name" 
+                           IsHitTestVisible="False" 
+                           Foreground="Gray" 
+                           VerticalAlignment="Center" 
+                           Margin="5,0,0,0"/>
+            </Grid>
+            <!-- Button to add the recipe. When clicked, it triggers the AddRecipe_Click event handler -->
+            <Button Content="Add Recipe" Click="AddRecipe_Click" Margin="10"/>
+        </StackPanel>
+    </Grid>
+</Window>
